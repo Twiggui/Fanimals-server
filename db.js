@@ -10,7 +10,7 @@ const {
 
 class Database {
   init() {
-    const connectionOptions = {
+    this.connectionOptions = {
       host: DB_HOST,
       port: DB_PORT,
       user: DB_USER,
@@ -19,13 +19,14 @@ class Database {
       multipleStatements: true,
       namedPlaceholders: true,
     };
-    this.connection = mysql.createConnection(connectionOptions);
-    this.pool = mysql.createPool(connectionOptions);
+    this.connection = mysql.createConnection(this.connectionOptions);
+    this.pool = mysql.createPool(this.connectionOptions);
     return this;
   }
 
   async query(...args) {
-    // unfortunatly, format on pooled connection does not seem to support named parameters
+    // unfortunatly, .format() on pooled connections does not seem to support named parameters
+    // (see : https://github.com/sidorares/node-mysql2/blob/master/documentation/Extras.md) like it does for non-pooled ones.
     // So we're artificially keeping a second non-pooled connection just to format the query
     const sql = this.connection.format(...args);
     // console.log(sql);

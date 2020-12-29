@@ -1,5 +1,9 @@
 const router = require('express').Router();
 const asyncHandler = require('express-async-handler');
-const contactsController = require('../controllers/contacts.js');
+const authController = require('../controllers/auth');
+const requireRequestBody = require('../middlewares/requireRequestBody');
 
-router.post('/', asyncHandler(contactsController.handlePost));
+router.post('/signIn', requireRequestBody, asyncHandler(authController.login));
+router.get('/logout', asyncHandler(authController.logout));
+
+module.exports = router;

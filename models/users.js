@@ -1,9 +1,10 @@
 const argon2 = require('argon2');
 const db = require('../db');
+
 const { ValidationError, RecordNotFoundError } = require('../error-types');
 
 const findOne = async (id, failIfNotFound = true) => {
-  const user = await db.query('SELECT * FROM user WHERE id = ?', [id]);
+  const user = await db.query('SELECT * FROM users WHERE id = ?', [id]);
   if (user.length) {
     return user[0];
   }
@@ -14,7 +15,7 @@ const findOne = async (id, failIfNotFound = true) => {
 // Vérification si l'email exsiste déja dans la DB
 
 const emailAlreadyExists = async (email) => {
-  const rows = await db.query('SELECT * FROM user WHERE email = ?', [email]);
+  const rows = await db.query('SELECT * FROM users WHERE email = ?', [email]);
   if (rows.length) {
     return true;
   }
@@ -74,14 +75,15 @@ const createUserInDatabase = async (newAttributes) => {
   } = newAttributes;
   const encrypted_password = await hashPassword(password);
   const res = await db.query(
-    'INSERT INTO user (firstname, lastname, birthday, postal, city, email, encrypted_password) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO users (firstname, lastname, birthday, postal, city, email, encrypted_password) VALUES (?, ?, ?, ?, ?, ?, ?)',
     [firstname, lastname, birthday, postal, city, email, encrypted_password]
   );
+
   return { firstname, lastname, email, id: res.insertId };
 };
 
 const findByEmail = async (email, failIfNotFound = true) => {
-  const rows = await db.query(`SELECT * FROM user WHERE email = ?`, [email]);
+  const rows = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
   if (rows.length) {
     return rows[0];
   }
