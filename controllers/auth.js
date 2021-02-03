@@ -6,17 +6,15 @@ module.exports.login = async (req, res) => {
     user &&
     (await User.verifyPassword(user.encrypted_password, req.body.password))
   ) {
-    console.log(req.session);
-
     if (req.body.stayConnected) {
       req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000;
     }
     req.session.userId = user.id;
 
-    req.session.save((err) => {
+    req.session.save(async (err) => {
       if (err) return res.sendStatus(500);
-      console.log(user.id);
-      return res.status(200).json(user.id);
+      const userDatas = await User.findOne(user.id);
+      return res.status(200).json(userDatas);
     });
   } else {
     res.sendStatus(401);

@@ -4,7 +4,10 @@ const db = require('../db');
 const { ValidationError, RecordNotFoundError } = require('../error-types');
 
 const findOne = async (id, failIfNotFound = true) => {
-  const user = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+  const user = await db.query(
+    'SELECT id, firstname, lastname, birthday, email, postal, city FROM users WHERE id = ?',
+    [id]
+  );
   if (user.length) {
     return user[0];
   }
